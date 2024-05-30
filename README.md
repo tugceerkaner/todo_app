@@ -1,8 +1,8 @@
 # Capstone Project
+- CLI commands for build, test and coverage
 
-- CLI commands:
-- Run the source code </br>
-```python main.py``` </br></br>
+## Run the source code
+```python main.py``` 
 
 ## Run the unit tests
 ```python -m unittest discover tests ```<br>
