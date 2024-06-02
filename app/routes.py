@@ -1,8 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
-
-app = Flask(__name__)
-
-todos = []
+from flask import render_template, request, redirect, url_for
+from app import app, todos
 
 
 @app.route('/')
@@ -23,7 +20,3 @@ def delete_todo(todo_id):
     if 0 <= todo_id < len(todos):
         todos.pop(todo_id)
     return redirect(url_for('index'))
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
