@@ -30,8 +30,7 @@ jobs:
     executor: docker-executor
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 23.0.1 
+      - setup_remote_docker
       - run:
           name: Build Docker Image
           command: |
