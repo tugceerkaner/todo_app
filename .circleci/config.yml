@@ -31,7 +31,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.17  # Güncellenmiş Docker sürümü
+          version: 23.0.1 
       - run:
           name: Build Docker Image
           command: |
