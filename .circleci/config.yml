@@ -15,7 +15,7 @@ jobs:
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip install --no-cache-dir -r requirements.txt
       - run:
           name: Run Unit Tests with Coverage
           command: |
@@ -31,7 +31,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.17  # Güncellenmiş Docker sürümü
       - run:
           name: Build Docker Image
           command: |
