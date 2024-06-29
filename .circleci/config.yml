@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8 # next-gen docker image
     steps:
       - checkout
       - run:
@@ -18,7 +18,7 @@ jobs:
             . venv/bin/activate
             coverage run -m unittest discover -s tests
             coverage xml
-      - store_artifacts: # this step will be removed later, it is added just to see coverage data
+      - store_artifacts:
           path: coverage.xml
           destination: coverage_reports
 
