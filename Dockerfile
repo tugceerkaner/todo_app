@@ -4,6 +4,8 @@ FROM python:3.8-slim
 # Set the working directory in the container to /app
 WORKDIR /
 
+RUN apt-get update
+
 # Create the virtual environment
 RUN python -m venv /opt/venv
 
