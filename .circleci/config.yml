@@ -1,9 +1,13 @@
 version: 2.1
 
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/python:3.8
+
 jobs:
   test:
-    docker:
-      - image: cimg/python:3.8 # next-gen docker image
+    executor: docker-executor
     steps:
       - checkout
       - run:
@@ -22,8 +26,33 @@ jobs:
           path: coverage.xml
           destination: coverage_reports
 
+  build_and_push:
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+      - run:
+          name: Build Docker Image
+          command: |
+            version="build-$CIRCLE_BUILD_NUM"
+            echo $version
+            docker build -t $DOCKERHUB_USERNAME/todo_app:$version .
+      - run:
+          name: Login to Docker Hub
+          command: |
+            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - run:
+          name: Push Docker Image to Docker Hub
+          command: |
+            version="build-$CIRCLE_BUILD_NUM"
+            docker push $DOCKERHUB_USERNAME/todo_app:$version
+
 workflows:
   version: 2
-  test:
+  build_and_test:
     jobs:
       - test
+      - build_and_push:
+          requires:
+            - test
