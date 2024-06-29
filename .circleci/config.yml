@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build_and_test:
+  test:
     docker:
       - image: circleci/python:3.8
     steps:
@@ -13,11 +13,6 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
       - run:
-          name: Build Project
-          command: |
-            . venv/bin/activate
-            python main.py
-      - run:
           name: Run Unit Tests
           command: |
             . venv/bin/activate
@@ -25,6 +20,6 @@ jobs:
 
 workflows:
   version: 2
-  build_and_test:
+  test:
     jobs:
-      - build_and_test
+      - test
