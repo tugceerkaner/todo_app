@@ -34,9 +34,9 @@ jobs:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     steps:
-      - checkout
       - attach_workspace:
           at: /workspace
+      - checkout
       - run:
           name: Run SonarCloud Scan
           command: |
