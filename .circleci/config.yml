@@ -23,6 +23,10 @@ jobs:
             . venv/bin/activate
             coverage run -m unittest discover -s tests
             coverage xml
+      - run:
+          name: Fix Coverage Paths
+          command: |
+            sed -i 's|/home/circleci/project|.|g' coverage.xml
       - persist_to_workspace:
           root: .
           paths:
@@ -35,9 +39,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run:
-          name: Check Coverage File in Workspace
-          command: ls -la ~/project
       - run:
           name: Run SonarCloud Scan
           command: |
