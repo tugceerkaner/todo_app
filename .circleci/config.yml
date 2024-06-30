@@ -38,9 +38,11 @@ jobs:
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
               -Dsonar.sources=. \
+              -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile \
               -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.login=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=coverage.xml
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.python.coverage.reportPaths=coverage.xml \
+              -Dsonar.python.version=3.8
 
   docker_build_and_push:
     executor: docker-executor
