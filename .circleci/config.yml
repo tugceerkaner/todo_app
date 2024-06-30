@@ -4,7 +4,6 @@ executors:
   python-executor:
     docker:
       - image: cimg/python:3.8
-    working_directory: ~/project
 
 jobs:
   python_unit_test:
@@ -18,32 +17,19 @@ jobs:
             . venv/bin/activate
             pip install --no-cache-dir -r requirements.txt
       - run:
-          name: Run Unit Tests with Coverage
+          name: Run Unit Tests
           command: |
             . venv/bin/activate
-            coverage run -m unittest discover -s tests
-            coverage xml
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
+            python -m unittest discover -s tests
 
   sonarcloud_scan:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
-    working_directory: ~/project
     steps:
-      - attach_workspace:
-          at: ~/project
+      - checkout
       - run:
           name: Check Coverage File in Workspace
-          command: ls -la ~/project
-      - run:
-          name: Check Coverage File in Workspace
-          command: pwd
-      - run:
-          name: Check Coverage File in Workspace
-          command: ls -la .
+          command: ls -lrth .
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -51,10 +37,10 @@ jobs:
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
               -Dsonar.sources=. \
+              -Dsonar.tests=tests \
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
@@ -63,8 +49,7 @@ jobs:
   docker_build_and_push:
     executor: python-executor
     steps:
-      - attach_workspace:
-          at: ~/project
+      - checkout
       - setup_remote_docker
       - run:
           name: Build Docker Image
