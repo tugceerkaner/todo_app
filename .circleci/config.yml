@@ -22,13 +22,13 @@ jobs:
             . venv/bin/activate
             coverage run -m unittest discover -s tests
             coverage xml
-      - store_artifacts:
-          path: coverage.xml
-          destination: coverage_reports
       - persist_to_workspace:
           root: ./
           paths:
             - coverage.xml
+      - run:
+          name: List Workspace Directory
+          command: ls -la
 
   sonarcloud_scan:
     docker:
@@ -38,9 +38,8 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          name: Check Coverage File
-          command: |
-            ls -la /workspace
+          name: Check Coverage File in Workspace
+          command: ls -la /workspace
       - run:
           name: Run SonarCloud Scan
           command: |
