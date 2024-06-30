@@ -29,6 +29,9 @@ jobs:
       - checkout
       - run:
           name: Check Coverage File in Workspace
+          command: pwd
+      - run:
+          name: Check Coverage File in Workspace
           command: ls -lrth .
       - run:
           name: Run SonarCloud Scan
@@ -36,8 +39,7 @@ jobs:
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
-              -Dsonar.sources=app/**,main.py \
-              -Dsonar.tests=tests \
+              -Dsonar.sources=. \
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
