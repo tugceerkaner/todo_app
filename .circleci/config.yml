@@ -38,7 +38,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workspace
-      - checkout
+      # - checkout
       - run:
           name: Check Coverage File in Workspace
           command: ls -la ~/workspace
