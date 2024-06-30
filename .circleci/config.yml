@@ -6,7 +6,7 @@ executors:
       - image: cimg/python:3.8
 
 jobs:
-  test:
+  python_unit_test:
     executor: docker-executor
     steps:
       - checkout
@@ -26,7 +26,23 @@ jobs:
           path: coverage.xml
           destination: coverage_reports
 
-  build_and_push:
+  sonarcloud_scan:
+    docker:
+      - image: sonarsource/sonar-scanner-cli:latest
+    steps:
+      - checkout
+      - run:
+          name: Run SonarCloud Scan
+          command: |
+            sonar-scanner \
+              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+              -Dsonar.organization=$SONAR_ORG_KEY \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.login=$SONAR_TOKEN \
+              -Dsonar.python.coverage.reportPaths=coverage.xml
+
+  docker_build_and_push:
     executor: docker-executor
     steps:
       - checkout
@@ -51,7 +67,10 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test
-      - build_and_push:
+      - python_unit_test
+      - sonarcloud_scan:
           requires:
-            - test
+            - python_unit_test
+      - docker_build_and_push:
+          requires:
+            - sonarcloud_scan
