@@ -1,13 +1,14 @@
 version: 2.1
 
 executors:
-  docker-executor:
+  python-executor:
     docker:
       - image: cimg/python:3.8
+    working_directory: ~/workspace
 
 jobs:
-  test_and_sonar:
-    executor: docker-executor
+  python_unit_test:
+    executor: python-executor
     steps:
       - checkout
       - run:
@@ -22,9 +23,25 @@ jobs:
             . venv/bin/activate
             coverage run -m unittest discover -s tests
             coverage xml
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage.xml
+      - store_artifacts:
+          path: coverage.xml
+          destination: coverage_reports
+
+  sonarcloud_scan:
+    docker:
+      - image: sonarsource/sonar-scanner-cli:latest
+    working_directory: ~/workspace
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - checkout
       - run:
-          name: List Files
-          command: ls -la
+          name: Check Coverage File in Workspace
+          command: ls -la ~/workspace
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -35,11 +52,11 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=coverage.xml \
+              -Dsonar.python.coverage.reportPaths=~/workspace/coverage.xml \
               -Dsonar.python.version=3.8
 
   docker_build_and_push:
-    executor: docker-executor
+    executor: python-executor
     steps:
       - checkout
       - setup_remote_docker
@@ -63,7 +80,10 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_and_sonar
+      - python_unit_test
+      - sonarcloud_scan:
+          requires:
+            - python_unit_test
       # - docker_build_and_push:
       #     requires:
-      #       - test_and_sonar
+      #       - sonarcloud_scan
