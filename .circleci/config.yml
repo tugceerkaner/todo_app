@@ -33,9 +33,9 @@ jobs:
       - image: sonarsource/sonar-scanner-cli:latest
     steps:
       - checkout
-      - run:
-          name: Fetch main branch
-          command: git fetch origin circleci-project-setup
+      # - run:
+      #     name: Fetch main branch
+      #     command: git fetch origin circleci-project-setup
       - run:
           name: Run SonarCloud Scan
           command: |
