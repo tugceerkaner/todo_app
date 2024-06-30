@@ -23,23 +23,23 @@ jobs:
             coverage run -m unittest discover -s tests
             coverage xml
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
             - coverage.xml
       - run:
-          name: List Workspace Directory
-          command: ls -la
+          name: List Files in Workspace
+          command: ls -la /home/circleci/project
 
   sonarcloud_scan:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     steps:
-      - checkout
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/project
+      - checkout
       - run:
           name: Check Coverage File in Workspace
-          command: ls -la /workspace
+          command: ls -la /home/circleci/project
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -50,7 +50,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=/workspace/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/home/circleci/project/coverage.xml \
               -Dsonar.python.version=3.8
 
   docker_build_and_push:
