@@ -34,12 +34,12 @@ jobs:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     steps:
-      - attach_workspace:
-          at: /workspace
+      # - attach_workspace:
+      #     at: /workspace
       - checkout
       - run:
           name: Check Coverage File in Workspace
-          command: ls -la /workspace
+          command: ls -la #/workspace
       - run:
           name: Run SonarCloud Scan
           command: |
