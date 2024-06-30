@@ -38,9 +38,12 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          name: Run SonarCloud Scan
+          name: Check Coverage File
           command: |
             ls -la /workspace
+      - run:
+          name: Run SonarCloud Scan
+          command: |
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
