@@ -71,6 +71,6 @@ workflows:
       - sonarcloud_scan:
           requires:
             - python_unit_test
-      - docker_build_and_push:
-          requires:
-            - sonarcloud_scan
+      # - docker_build_and_push:
+      #     requires:
+      #       - sonarcloud_scan
