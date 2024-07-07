@@ -42,7 +42,7 @@ jobs:
           name: Download Artifacts
           command: |
             mkdir -p artifacts
-            cp /home/circleci/project/coverage.xml /tmp/project/
+            cp coverage/coverage.xml /tmp/project/
       - run:
           name: Check Coverage File
           command: ls -lrth artifacts
