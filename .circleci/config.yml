@@ -98,9 +98,9 @@ workflows:
   build_and_test:
     jobs:
       - python_unit_test
-      # - sonarcloud_scan:
-      #     requires:
-      #       - python_unit_test
+      - sonarcloud_scan:
+          requires:
+            - python_unit_test
       # - docker_build_and_push:
       #     requires:
       #       - sonarcloud_scan
