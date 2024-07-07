@@ -37,13 +37,10 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/project
       - run:
           name: Check Coverage File in Workspace
-          command: pwd
-      - run:
-          name: Check Coverage File in Workspace
-          command: ls -lrth /workspace
+          command: ls -lrth /home/circleci/project
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -54,7 +51,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=/workspace/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/home/circleci/project/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
@@ -89,6 +86,6 @@ workflows:
       - sonarcloud_scan:
           requires:
             - python_unit_test
-      # - docker_build_and_push:
-      #     requires:
-      #       - sonarcloud_scan
+      - docker_build_and_push:
+          requires:
+            - sonarcloud_scan
