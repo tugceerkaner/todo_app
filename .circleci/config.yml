@@ -36,10 +36,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Retrieve Coverage Report
+          name: Download Artifacts
           command: |
             mkdir -p artifacts
-            cp $CIRCLE_ARTIFACTS/coverage/coverage.xml artifacts/
+            cp ../coverage/coverage.xml artifacts/
       - run:
           name: Check Coverage File
           command: ls -lrth artifacts
