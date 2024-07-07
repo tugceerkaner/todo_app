@@ -33,6 +33,11 @@ jobs:
             ls -lh $(pwd)/coverage.xml
       - store_artifacts:
           path: coverage.xml
+      - run:
+          name: Print Coverage File Path After Storing
+          command: |
+            echo "Coverage file path: $(pwd)/coverage.xml"
+            ls -lh $(pwd)/coverage.xml
 
   sonarcloud_scan:
     docker:
