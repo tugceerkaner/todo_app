@@ -26,23 +26,21 @@ jobs:
           command: |
             . venv/bin/activate
             coverage xml -o coverage.xml
-      - store_artifacts:
-          path: coverage.xml
-          destination: .
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage.xml
 
   sonarcloud_scan:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     steps:
       - checkout
-      - run:
-          name: Download Artifacts
-          command: |
-            mkdir -p artifacts
-            curl -o artifacts/coverage.xml "$(circleci builds artifacts $CIRCLE_BUILD_NUM | grep coverage.xml | awk '{print $2}')"
+      - attach_workspace:
+          at: /workspace
       - run:
           name: Check Coverage File
-          command: ls -lrth artifacts
+          command: ls -lrth /workspace
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -53,7 +51,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=artifacts/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/workspace/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
