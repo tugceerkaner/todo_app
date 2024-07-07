@@ -79,7 +79,7 @@ jobs:
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
-              -Dsonar.sources=. \
+              -Dsonar.sources=/tmp/project/* \
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/**,**/README.md,**/*.xml,**/*.txt \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
