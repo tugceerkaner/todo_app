@@ -26,6 +26,11 @@ jobs:
           command: |
             . venv/bin/activate
             coverage xml -o coverage.xml
+      - run:
+          name: Print Coverage File Path Before Storing
+          command: |
+            echo "Coverage file path: $(pwd)/coverage.xml"
+            ls -lh $(pwd)/coverage.xml
       - store_artifacts:
           path: coverage.xml
 
@@ -35,10 +40,16 @@ jobs:
     steps:
       - checkout
       - run:
+          name: List Artifacts Directory
+          command: |
+            echo "Listing artifacts directory:"
+            ls -lh /tmp/circleci-artifacts
+            ls -lh /tmp/circleci-artifacts/coverage.xml
+      - run:
           name: Download Artifacts
           command: |
             mkdir -p artifacts
-            cp /tmp/coverage.xml artifacts/
+            cp /tmp/circleci-artifacts/coverage.xml artifacts/
       - run:
           name: Check Coverage File
           command: ls -lrth artifacts
