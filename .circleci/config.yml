@@ -20,19 +20,30 @@ jobs:
           name: Run Unit Tests
           command: |
             . venv/bin/activate
-            python -m unittest discover -s tests
+            coverage run -m unittest discover -s tests
+      - run:
+          name: Generate Coverage Report
+          command: |
+            . venv/bin/activate
+            coverage xml -o coverage.xml
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage.xml
 
   sonarcloud_scan:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     steps:
       - checkout
+      - attach_workspace:
+          at: /workspace
       - run:
           name: Check Coverage File in Workspace
           command: pwd
       - run:
           name: Check Coverage File in Workspace
-          command: ls -lrth .
+          command: ls -lrth /workspace
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -43,6 +54,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.python.coverage.reportPaths=/workspace/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
