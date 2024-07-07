@@ -48,7 +48,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: print pwd
+          name: Print Current Directory
           command: pwd
       - attach_workspace:
           at: /tmp/workspace
@@ -56,8 +56,11 @@ jobs:
           name: Check Coverage File
           command: ls -lrth /tmp/workspace
       - run:
-          name: Check Coverage File_after created
-          command: ls -lrth
+          name: Copy Coverage File to Project Directory
+          command: cp /tmp/workspace/coverage.xml /tmp/project/
+      - run:
+          name: Check Project Directory
+          command: ls -lrth /tmp/project
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -68,7 +71,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=/tmp/workspace/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
