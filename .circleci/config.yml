@@ -48,8 +48,7 @@ jobs:
           name: List Artifacts Directory
           command: |
             echo "Listing artifacts directory:"
-            ls -lh /tmp/circleci-artifacts
-            ls -lh /tmp/circleci-artifacts/coverage.xml
+            ls -lh /home/circleci/project/
       - run:
           name: Download Artifacts
           command: |
