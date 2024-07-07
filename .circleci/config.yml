@@ -36,6 +36,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Check Coverage File_first
+          command: ls -lrth artifacts
+      - run:
           name: Download Artifacts
           command: |
             mkdir -p artifacts
