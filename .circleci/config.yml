@@ -47,6 +47,9 @@ jobs:
     executor: sonar-executor
     steps:
       - checkout
+      - run:
+          name: print pwd
+          command: pwd
       - attach_workspace:
           at: /tmp/workspace
       - run:
