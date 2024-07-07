@@ -4,12 +4,12 @@ executors:
   python-executor:
     docker:
       - image: cimg/python:3.8
-    working_directory: /tmp
+    working_directory: ~/project
 
   sonar-executor:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
-    working_directory: /tmp
+    working_directory: ~/project
 
 jobs:
   python_unit_test:
@@ -31,14 +31,15 @@ jobs:
           name: Generate Coverage Report
           command: |
             . venv/bin/activate
-            coverage xml -o /tmp/workspace/coverage.xml
+            mkdir -p ~/project/workspace
+            coverage xml -o ~/project/workspace/coverage.xml
       - run:
           name: Print Coverage File Path Before Storing
           command: |
-            echo "Coverage file path: /tmp/workspace/coverage.xml"
-            ls -lh /tmp/workspace/coverage.xml
+            echo "Coverage file path: ~/project/workspace/coverage.xml"
+            ls -lh ~/project/workspace/coverage.xml
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: ~/project/workspace
           paths:
             - coverage.xml
 
