@@ -59,8 +59,17 @@ jobs:
           name: Copy Coverage File to Project Directory
           command: cp /tmp/workspace/coverage.xml /tmp/project/
       - run:
-          name: Check Project Directory
+          name: Check Coverage File in Project Directory
           command: ls -lrth /tmp/project
+      - run:
+          name: Verify Coverage File is Not Empty
+          command: |
+            if [ -s /tmp/project/coverage.xml ]; then
+              echo "Coverage file is not empty";
+            else
+              echo "Coverage file is empty";
+              exit 1;
+            fi
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -71,7 +80,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
