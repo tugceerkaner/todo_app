@@ -28,6 +28,7 @@ jobs:
             coverage xml -o coverage.xml
       - store_artifacts:
           path: coverage.xml
+          destination: coverage
 
   sonarcloud_scan:
     docker:
@@ -35,9 +36,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Download Artifacts
+          name: Retrieve Coverage Report
           command: |
-            mkdir -p artifacts && curl -o artifacts/coverage.xml $(circleci config artifacts list | grep "coverage.xml" | awk '{print $2}')
+            mkdir -p artifacts && cp /tmp/circleci-artifacts/coverage/coverage.xml artifacts/
       - run:
           name: Check Coverage File
           command: ls -lrth artifacts
