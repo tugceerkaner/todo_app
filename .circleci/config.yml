@@ -71,19 +71,20 @@ jobs:
               exit 1;
             fi
       - run:
-          name: Print Current Directory2
-          command: cat coverage.xml 
+          name: Fix Coverage Paths with sed
+          command: |
+            sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
       - run:
           name: Run SonarCloud Scan
           command: |
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
-              -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/**,**/README.md,**/*.xml,**/*.txt \
               -Dsonar.sources=. \
+              -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.python.coverage.reportPaths=coverage.xml \
               -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
