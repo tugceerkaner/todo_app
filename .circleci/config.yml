@@ -53,6 +53,9 @@ jobs:
           name: Check Coverage File
           command: ls -lrth /tmp/workspace
       - run:
+          name: Check Coverage File_after created
+          command: ls -lrth
+      - run:
           name: Run SonarCloud Scan
           command: |
             sonar-scanner \
