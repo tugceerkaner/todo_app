@@ -37,7 +37,7 @@ jobs:
       - checkout
       - run:
           name: Check Coverage File_first
-          command: ls -lrth 
+          command: pwd
       - run:
           name: Download Artifacts
           command: |
