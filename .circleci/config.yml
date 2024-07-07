@@ -1,3 +1,5 @@
+
+
 version: 2.1
 
 executors:
@@ -38,6 +40,10 @@ jobs:
           command: |
             echo "Coverage file path: ~/project/workspace/coverage.xml"
             ls -lh ~/project/workspace/coverage.xml
+      # - persist_to_workspace:
+      #     root: ~/project/workspace
+      #     paths:
+      #       - coverage.xml
       - store_artifacts:
           path: ~/project/workspace/coverage.xml
           destination: coverage
@@ -45,17 +51,21 @@ jobs:
   sonarcloud_scan:
     executor: sonar-executor
     steps:
+      - run:
+          name: change pwd
+          command: /tmp/workspace
       - checkout
       - run:
-          name: List Artifacts Directory
-          command: |
-            mkdir -p artifacts
-            cp /home/circleci/project/coverage/coverage.xml artifacts/
-            echo "Contents of artifacts directory:"
-            ls -lh artifacts
+          name: print pwd
+          command: pwd
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Check Coverage File
-          command: ls -lrth artifacts
+          command: ls -lrth /tmp/workspace
+      - run:
+          name: Check Coverage File_after created
+          command: ls -lrth
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -66,7 +76,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=artifacts/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/tmp/workspace/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
@@ -101,6 +111,6 @@ workflows:
       - sonarcloud_scan:
           requires:
             - python_unit_test
-      # - docker_build_and_push:
-      #     requires:
-      #       - sonarcloud_scan
+      - docker_build_and_push:
+          requires:
+            - sonarcloud_scan
