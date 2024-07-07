@@ -79,11 +79,11 @@ jobs:
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG_KEY \
-              -Dsonar.sources=/tmp/project/* \
+              -Dsonar.sources=. \
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/**,**/README.md,**/*.xml,**/*.txt \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
