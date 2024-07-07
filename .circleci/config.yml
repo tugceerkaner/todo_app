@@ -28,7 +28,6 @@ jobs:
             coverage xml -o coverage.xml
       - store_artifacts:
           path: coverage.xml
-          destination: .
 
   sonarcloud_scan:
     docker:
@@ -39,7 +38,7 @@ jobs:
           name: Download Artifacts
           command: |
             mkdir -p artifacts
-            cp $(ls -t ~/project/coverage.xml | head -n 1) artifacts/
+            cp /tmp/coverage.xml artifacts/
       - run:
           name: Check Coverage File
           command: ls -lrth artifacts
