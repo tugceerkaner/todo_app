@@ -72,7 +72,7 @@ jobs:
             fi
       - run:
           name: Print Current Directory2
-          command: pwd
+          command: cat coverage.xml 
       - run:
           name: Run SonarCloud Scan
           command: |
