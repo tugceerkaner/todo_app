@@ -1,0 +1,98 @@
+version: 2.1
+
+executors:
+  python-executor:
+    docker:
+      - image: cimg/python:3.8
+    working_directory: ~/project
+
+  sonar-executor:
+    docker:
+      - image: sonarsource/sonar-scanner-cli:latest
+    working_directory: ~/project
+
+jobs:
+  python_unit_test:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Set Up Python Environment
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --no-cache-dir -r requirements.txt
+      - run:
+          name: Run Unit Tests
+          command: |
+            . venv/bin/activate
+            coverage run -m unittest discover -s tests
+      - run:
+          name: Generate Coverage Report
+          command: |
+            . venv/bin/activate
+            mkdir -p ~/project/workspace
+            coverage xml -o ~/project/workspace/coverage.xml
+      - persist_to_workspace:
+          root: ~/project/workspace
+          paths:
+            - coverage.xml
+
+  sonarcloud_scan:
+    executor: sonar-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Copy and Fix Coverage Paths
+          command: |
+            cp /tmp/workspace/coverage.xml /tmp/project/
+            sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
+      - run:
+          name: Run SonarCloud Scan
+          command: |
+            sonar-scanner \
+              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+              -Dsonar.organization=$SONAR_ORG_KEY \
+              -Dsonar.sources=. \
+              -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
+              -Dsonar.python.version=3.8 \
+              -Dsonar.c.file.suffixes=- \
+              -Dsonar.cpp.file.suffixes=- \
+              -Dsonar.objc.file.suffixes=-
+
+  docker_build_and_push:
+    executor: python-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: |
+            version="build-$CIRCLE_BUILD_NUM"
+            docker build -t $DOCKERHUB_USERNAME/todo_app:$version .
+      - run:
+          name: Login to Docker Hub
+          command: |
+            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - run:
+          name: Push Docker Image to Docker Hub
+          command: |
+            version="build-$CIRCLE_BUILD_NUM"
+            docker push $DOCKERHUB_USERNAME/todo_app:$version
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - python_unit_test
+      - sonarcloud_scan:
+          requires:
+            - python_unit_test
+      - docker_build_and_push:
+          requires:
+            - sonarcloud_scan
