@@ -33,11 +33,6 @@ jobs:
             ls -lh $(pwd)/coverage.xml
       - store_artifacts:
           path: coverage.xml
-      - run:
-          name: Print Coverage File Path After Storing
-          command: |
-            echo "Coverage file path: $(pwd)/coverage.xml"
-            ls -lh $(pwd)/coverage.xml
 
   sonarcloud_scan:
     docker:
@@ -45,15 +40,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: List Artifacts Directory
-          command: |
-            echo "Listing artifacts directory:"
-            ls -lh /home/circleci/project/
-      - run:
           name: Download Artifacts
           command: |
             mkdir -p artifacts
-            cp /tmp/circleci-artifacts/coverage.xml artifacts/
+            cp /home/circleci/project/coverage.xml artifacts/
       - run:
           name: Check Coverage File
           command: ls -lrth artifacts
