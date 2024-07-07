@@ -71,6 +71,9 @@ jobs:
               exit 1;
             fi
       - run:
+          name: Print Current Directory2
+          command: pwd
+      - run:
           name: Run SonarCloud Scan
           command: |
             sonar-scanner \
