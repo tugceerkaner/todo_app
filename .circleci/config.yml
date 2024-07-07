@@ -4,12 +4,12 @@ executors:
   python-executor:
     docker:
       - image: cimg/python:3.8
-    working_directory: ~/project
+    working_directory: /tmp
 
   sonar-executor:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
-    working_directory: ~/project
+    working_directory: /tmp
 
 jobs:
   python_unit_test:
@@ -31,14 +31,14 @@ jobs:
           name: Generate Coverage Report
           command: |
             . venv/bin/activate
-            coverage xml -o coverage.xml
+            coverage xml -o /tmp/workspace/coverage.xml
       - run:
           name: Print Coverage File Path Before Storing
           command: |
-            echo "Coverage file path: $(pwd)/coverage.xml"
-            ls -lh $(pwd)/coverage.xml
+            echo "Coverage file path: /tmp/workspace/coverage.xml"
+            ls -lh /tmp/workspace/coverage.xml
       - persist_to_workspace:
-          root: .
+          root: /tmp/workspace
           paths:
             - coverage.xml
 
@@ -47,10 +47,10 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /workspace
+          at: /tmp/workspace
       - run:
           name: Check Coverage File
-          command: ls -lrth /workspace
+          command: ls -lrth /tmp/workspace
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -61,7 +61,7 @@ jobs:
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=/workspace/coverage.xml \
+              -Dsonar.python.coverage.reportPaths=/tmp/workspace/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
