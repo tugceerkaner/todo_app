@@ -38,10 +38,6 @@ jobs:
       - run:
           name: list
           command: ls -lrth
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - coverage.xml
 
   sonarcloud_scan:
     executor: sonar-executor
@@ -50,49 +46,9 @@ jobs:
       - run:
           name: pwd
           command: pwd
-      # - attach_workspace:
-      #     at: /tmp/workspace
-      # - run:
-      #     name: Copy and Fix Coverage Paths
-      #     command: |
-      #       cp /tmp/workspace/coverage.xml /tmp/project/
-      #       sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
       - run:
-          name: Run SonarCloud Scan
-          command: |
-            sonar-scanner \
-              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-              -Dsonar.organization=$SONAR_ORG_KEY \
-              -Dsonar.sources=. \
-              -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
-              # -Dsonar.tests=tests/ \
-              -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.token=$SONAR_TOKEN \
-              # -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
-              -Dsonar.python.version=3.8 \
-              -Dsonar.c.file.suffixes=- \
-              -Dsonar.cpp.file.suffixes=- \
-              -Dsonar.objc.file.suffixes=-
-
-  docker_build_and_push:
-    executor: python-executor
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build Docker Image
-          command: |
-            version="build-$CIRCLE_BUILD_NUM"
-            docker build -t $DOCKERHUB_USERNAME/todo_app:$version .
-      - run:
-          name: Login to Docker Hub
-          command: |
-            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
-      - run:
-          name: Push Docker Image to Docker Hub
-          command: |
-            version="build-$CIRCLE_BUILD_NUM"
-            docker push $DOCKERHUB_USERNAME/todo_app:$version
+          name: list
+          command: ls -lrth
 
 workflows:
   version: 2
@@ -102,6 +58,3 @@ workflows:
       - sonarcloud_scan:
           requires:
             - python_unit_test
-      # - docker_build_and_push:
-      #     requires:
-      #       - sonarcloud_scan
