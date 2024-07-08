@@ -93,6 +93,7 @@ jobs:
       - run:
           name: Cloning Manifest Repository
           command: |
+            pwd
             git clone https://github.com/tugceerkaner/todo_app_K8s_manifest.git
             cd todo_app_K8s_manifest
             git checkout manifest-tgc
@@ -102,9 +103,10 @@ jobs:
           name: Update Manifest File
           command: |
             pwd
+            ls -lrth
             cd todo_app_K8s_manifest
             TAG=$CIRCLE_BUILD_NUM
-            echo TAG
+            echo "TAG: $TAG"
             ((TAG--))
             sed -i "s/build-.*/build-$TAG/g" manifest_files/deployment.yaml
             cat manifest_files/deployment.yaml
