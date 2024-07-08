@@ -129,3 +129,6 @@ workflows:
       - docker_build_and_push:
           requires:
             - sonarcloud_scan
+      - update_manifest:
+          requires:
+            - docker_build_and_push
