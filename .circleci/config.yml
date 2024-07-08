@@ -31,8 +31,7 @@ jobs:
           name: Generate Coverage Report
           command: |
             . venv/bin/activate
-            mkdir -p ~/project/workspace
-            coverage xml -o ~/project/workspace/coverage.xml
+            coverage xml
       - run:
           name: pwd
           command: pwd
@@ -40,7 +39,7 @@ jobs:
           name: list
           command: ls -lrth
       - persist_to_workspace:
-          root: ~/project/workspace
+          root: ~/project
           paths:
             - coverage.xml
 
