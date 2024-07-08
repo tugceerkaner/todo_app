@@ -42,13 +42,16 @@ jobs:
     executor: sonar-executor
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
       - run:
-          name: Copy and Fix Coverage Paths
-          command: |
-            cp /tmp/workspace/coverage.xml /tmp/project/
-            sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
+          name: pwd
+          command: pwd
+      # - attach_workspace:
+      #     at: /tmp/workspace
+      # - run:
+      #     name: Copy and Fix Coverage Paths
+      #     command: |
+      #       cp /tmp/workspace/coverage.xml /tmp/project/
+      #       sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -57,9 +60,10 @@ jobs:
               -Dsonar.organization=$SONAR_ORG_KEY \
               -Dsonar.sources=. \
               -Dsonar.exclusions=**/build-wrapper-dump.json,**/Dockerfile,venv/** \
+              # -Dsonar.tests=tests/ \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
+              # -Dsonar.python.coverage.reportPaths=/tmp/project/coverage.xml \
               -Dsonar.python.version=3.8 \
               -Dsonar.c.file.suffixes=- \
               -Dsonar.cpp.file.suffixes=- \
@@ -93,6 +97,6 @@ workflows:
       - sonarcloud_scan:
           requires:
             - python_unit_test
-      - docker_build_and_push:
-          requires:
-            - sonarcloud_scan
+      # - docker_build_and_push:
+      #     requires:
+      #       - sonarcloud_scan
