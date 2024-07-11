@@ -85,7 +85,7 @@ jobs:
           command: |
             version="build-$CIRCLE_BUILD_NUM"
             docker push $DOCKERHUB_USERNAME/todo_app:$version
- 
+  
   update_manifest:
     executor: python-executor
     steps:
@@ -102,7 +102,7 @@ jobs:
           name: Update Manifest File
           command: |
             cd todo_app_K8s_manifest
-            TAG=$CIRCLE_BUILD_NUM
+            export TAG=$CIRCLE_BUILD_NUM
             echo "Captured TAG: $TAG"
             ((TAG--))
             echo "Decremented TAG: $TAG"
@@ -118,6 +118,7 @@ jobs:
             git commit -m "$COMMIT_MESSAGE"
             git config credential.helper 'cache --timeout=120'
             git push -q https://$GITHUB_PERSONAL_TOKEN@github.com/tugceerkaner/todo_app_K8s_manifest.git main
+
 
 
 workflows:
