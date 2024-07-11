@@ -44,11 +44,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp/workspace
-      - run:
-          name: Copy and Fix Coverage Paths
-          command: |
-            cp /tmp/workspace/coverage.xml /tmp/project/
-            sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
+      # - run:
+      #     name: Copy and Fix Coverage Paths
+      #     command: |
+      #       cp /tmp/workspace/coverage.xml /tmp/project/
+      #       sed -i 's|/home/circleci/project|/tmp/project|g' /tmp/project/coverage.xml
       - run:
           name: Run SonarCloud Scan
           command: |
@@ -128,9 +128,9 @@ workflows:
       - sonarcloud_scan:
           requires:
             - python_unit_test
-      - docker_build_and_push:
-          requires:
-            - sonarcloud_scan
-      - update_manifest:
-          requires:
-            - docker_build_and_push
+      # - docker_build_and_push:
+      #     requires:
+      #       - sonarcloud_scan
+      # - update_manifest:
+      #     requires:
+      #       - docker_build_and_push
