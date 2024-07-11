@@ -74,6 +74,7 @@ jobs:
           name: Build Docker Image
           command: |
             version="build-$CIRCLE_BUILD_NUM"
+            echo "Build Number: $version"
             docker build -t $DOCKERHUB_USERNAME/todo_app:$version .
       - run:
           name: Login to Docker Hub
@@ -84,6 +85,35 @@ jobs:
           command: |
             version="build-$CIRCLE_BUILD_NUM"
             docker push $DOCKERHUB_USERNAME/todo_app:$version
+
+  update_manifest:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Cloning Manifest Repository
+          command: |
+            git clone https://github.com/tugceerkaner/todo_app_K8s_manifest.git
+            cd todo_app_K8s_manifest
+            git checkout main
+            git config --global user.email "tugceerkaner@gmail.com"
+            git config --global user.name "tugceerkaner"
+      - run:
+          name: Update Manifest File and Commit Changes
+          command: |
+            cd todo_app_K8s_manifest
+            TAG=$CIRCLE_BUILD_NUM
+            ((TAG--))
+            echo "TAG: $TAG"
+            sed -i "s/build-.*/build-$TAG/g" manifest_files/deployment.yaml
+            cat manifest_files/deployment.yaml
+            
+            git add .
+            COMMIT_MESSAGE="Update manifest with build-$TAG"
+            git commit -m "$COMMIT_MESSAGE"
+            
+            git config credential.helper 'cache --timeout=120'
+            git push -q https://$GITHUB_PERSONAL_TOKEN@github.com/tugceerkaner/todo_app_K8s_manifest.git main
 
 workflows:
   version: 2
@@ -96,3 +126,6 @@ workflows:
       - docker_build_and_push:
           requires:
             - sonarcloud_scan
+      - update_manifest:
+          requires:
+            - docker_build_and_push
