@@ -85,7 +85,7 @@ jobs:
           command: |
             version="build-$CIRCLE_BUILD_NUM"
             docker push $DOCKERHUB_USERNAME/todo_app:$version
-
+ 
   update_manifest:
     executor: python-executor
     steps:
@@ -93,32 +93,32 @@ jobs:
       - run:
           name: Cloning Manifest Repository
           command: |
-            pwd
             git clone https://github.com/tugceerkaner/todo_app_K8s_manifest.git
             cd todo_app_K8s_manifest
-            git checkout manifest-tgc
+            git checkout main
             git config --global user.email "tugceerkaner@gmail.com"
             git config --global user.name "tugceerkaner"
       - run:
           name: Update Manifest File
           command: |
-            pwd
-            ls -lrth
             cd todo_app_K8s_manifest
             TAG=$CIRCLE_BUILD_NUM
-            echo "TAG: $TAG"
+            echo "Captured TAG: $TAG"
             ((TAG--))
+            echo "Decremented TAG: $TAG"
             sed -i "s/build-.*/build-$TAG/g" manifest_files/deployment.yaml
             cat manifest_files/deployment.yaml
       - run:
           name: Commit and Push Changes
           command: |
-            pwd
             cd todo_app_K8s_manifest
             git add .
-            git commit -m "Update manifest with build-$TAG"
+            COMMIT_MESSAGE="Update manifest with build-$TAG"
+            echo "Commit Message: $COMMIT_MESSAGE"
+            git commit -m "$COMMIT_MESSAGE"
             git config credential.helper 'cache --timeout=120'
-            git push -q https://$GITHUB_PERSONAL_TOKEN@github.com/tugceerkaner/todo_app_K8s_manifest.git manifest-tgc
+            git push -q https://$GITHUB_PERSONAL_TOKEN@github.com/tugceerkaner/todo_app_K8s_manifest.git main
+
 
 workflows:
   version: 2
