@@ -17,4 +17,5 @@
 - to see coverage detail, not necessary for the xml report <br>
 
 ```coverage xml``` 
-- creates coverage.xml report, it will use Sonarcloud integration <br> 
+- creates coverage.xml report, it will use Sonarcloud integration <br>
+- 
