@@ -95,7 +95,7 @@ jobs:
           command: |
             git clone https://github.com/tugceerkaner/todo_app_K8s_manifest.git
             cd todo_app_K8s_manifest
-            git checkout main
+            git checkout tgc-pv-solution
             git config --global user.email "tugceerkaner@gmail.com"
             git config --global user.name "tugceerkaner"
       - run:
@@ -115,7 +115,7 @@ jobs:
             git commit -m "$COMMIT_MESSAGE"
 
             git config credential.helper 'cache --timeout=120'
-            git push -q https://$GITHUB_PERSONAL_TOKEN@github.com/tugceerkaner/todo_app_K8s_manifest.git main
+            git push -q https://$GITHUB_PERSONAL_TOKEN@github.com/tugceerkaner/todo_app_K8s_manifest.git tgc-pv-solution
 
 workflows:
   version: 2
@@ -124,22 +124,30 @@ workflows:
       - python_unit_test:
           filters:
             branches:
-              only: main
+              only:
+                - main
+                - feature/*
       - sonarcloud_scan:
           requires:
             - python_unit_test
           filters:
             branches:
-              only: main
+              only:
+                - main
+                - feature/*
       - docker_build_and_push:
           requires:
             - sonarcloud_scan
           filters:
             branches:
-              only: main
+              only:
+                - main
+                - feature/*
       - update_manifest:
           requires:
             - docker_build_and_push
           filters:
             branches:
-              only: main
+              only:
+                - main
+                - feature/*
