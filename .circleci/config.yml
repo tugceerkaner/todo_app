@@ -126,7 +126,7 @@ workflows:
             branches:
               only:
                 - main
-                - feature/*
+                - test-app-tgc
       - sonarcloud_scan:
           requires:
             - python_unit_test
@@ -134,7 +134,7 @@ workflows:
             branches:
               only:
                 - main
-                - feature/*
+                - test-app-tgc
       - docker_build_and_push:
           requires:
             - sonarcloud_scan
@@ -142,7 +142,7 @@ workflows:
             branches:
               only:
                 - main
-                - feature/*
+                - test-app-tgc
       - update_manifest:
           requires:
             - docker_build_and_push
@@ -150,4 +150,4 @@ workflows:
             branches:
               only:
                 - main
-                - feature/*
+                - test-app-tgc
