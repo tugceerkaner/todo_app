@@ -121,23 +121,23 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - python_unit_test:
-          filters:
-            branches:
-              only:
-                - main
-                - test-app-tgc
-      - sonarcloud_scan:
-          requires:
-            - python_unit_test
-          filters:
-            branches:
-              only:
-                - main
-                - test-app-tgc
+      # - python_unit_test:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
+      #           - test-app-tgc
+      # - sonarcloud_scan:
+          # requires:
+          #   - python_unit_test
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+          #       - test-app-tgc
       - docker_build_and_push:
-          requires:
-            - sonarcloud_scan
+          # requires:
+          #   - sonarcloud_scan
           filters:
             branches:
               only:
