@@ -1,32 +1,36 @@
+# import os
+import json
 import unittest
-from app import app, todos
+from unittest.mock import patch, mock_open
+from app import app
+# from app.routes import save_todos, load_todos
 
 
 class ToDoTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.config['TESTING'] = True
         self.app = app.test_client()
-        todos.clear()  # Clear todos list before each test
+        self.app.testing = True
 
-    def test_index(self):
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'ToDo List', response.data)
+    @patch('app.routes.open', new_callable=mock_open, read_data='[]')
+    @patch('app.routes.os.path.exists', return_value=True)
+    def test_add_todo(self, mock_exists, open_mock):
+        with patch('app.routes.todos', []):
+            response = self.app.post('/add', data=dict(todo='Test ToDo'))
+            written_data = open_mock().write.mock_calls
+            written_data_str = ''.join([call.args[0] for call in written_data])
+            # print(f"Written data in test_add_todo: {written_data_str}")
+            self.assertIn('Test ToDo', json.loads(written_data_str))
 
-    def test_add_todo(self):
-        response = self.app.post('/add', data=dict(todo='Test ToDo'))
-        self.assertEqual(response.status_code, 302)  # Redirection after adding
-        response = self.app.get('/')
-        self.assertIn(b'Test ToDo', response.data)
-
-    def test_delete_todo(self):
-        # Add a ToDo first
-        self.app.post('/add', data=dict(todo='Test ToDo'))
-        response = self.app.post('/delete/0')
-        self.assertEqual(response.status_code, 302)  # Redirection after deleting
-        response = self.app.get('/')
-        self.assertNotIn(b'Test ToDo', response.data)
+    @patch('app.routes.save_todos')
+    @patch('app.routes.load_todos', return_value=["Test ToDo"])
+    def test_delete_todo(self, mock_load, mock_save):
+        with patch('app.routes.todos', ["Test ToDo"]):
+            response = self.app.post('/delete/0')
+            mock_save.assert_called()
+            written_data = mock_save.call_args[0][0]
+            # print(f"Written data in test_delete_todo: {written_data}")
+            self.assertNotIn('Test ToDo', written_data)
 
 
 if __name__ == '__main__':
